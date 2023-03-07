@@ -1,0 +1,34 @@
+{
+    "Interval": 500,
+    "IgnoreEnemy": false,
+    "IgnoreSenders": [
+        "OER1057"
+    ],
+    "TrnsEnable": true,
+    "TargetLang": "ja",
+    "ReadEnable": true,
+    "ReadPath": "D:\\Program Files\\SeikaSay2\\SeikaSay2.exe",
+    "ReadArg": "-cid 70021 -volume 100 -speed 55 -pitch 75 -alpha 75 -intonation 80 -emotion \"クール\" 80 -emotion \"照れ\" 20 -emotion \"怒り\" 80 -emotion \"喜び\" 20 -emotion \"ひそひそ\" 50 -t %Text",
+    "ReplaceList": [
+        {
+            "From": "ゾーン A ",
+            "To": "A点"
+        },
+        {
+            "From": "ゾーン B ",
+            "To": "B点"
+        },
+        {
+            "From": "ゾーン C ",
+            "To": "C点"
+        },
+        {
+            "From": "ゾーン D ",
+            "To": "D点"
+        },
+        {
+            "From": " ！",
+            "To": "！"
+        }
+    ]
+}
