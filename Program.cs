@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Text.RegularExpressions;
+using System.Net.Sockets;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -30,6 +31,7 @@ class Program
                 lastId = gameChat.Id;
 
                 string chatText = gameChat.Msg;
+                CleanText(ref chatText);
                 Console.Write(chatText);
 
                 (string translatedText, bool isTranslated) = Translate(chatText, config.TargetLang);
@@ -43,9 +45,12 @@ class Program
                 {
                     Console.Write("\n");
                 }
+
                 string textToPass = isTranslated ? translatedText : chatText;
                 ReplaceText(ref textToPass, config.ReplaceList);
-                Debug.WriteLine($"Text to pass: {textToPass}");
+                Debug.WriteLine(config.ReadPath);
+                Debug.WriteLine(config.ReadArg.Replace("%Text", textToPass));
+                Process.Start(config.ReadPath, config.ReadArg.Replace("%Text", textToPass));
             }
             Thread.Sleep(config.Interval);
         }
@@ -118,8 +123,13 @@ class Program
     {
         foreach (ReplacePair pair in pairs)
         {
-            text = text.Replace(pair.From, pair.To);
+            text = Regex.Replace(text, pair.From, pair.To);
         }
+    }
+    static void CleanText(ref string text)
+    {
+        text = Regex.Replace(text, "<.*?>", "");
+        text = text.Replace("\t", "");
     }
 
     public class GameChat
