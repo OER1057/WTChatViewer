@@ -12,7 +12,12 @@ class Program
     static async Task Main(string[] args)
     {
         Console.WriteLine("WTChatViewer");
-        Config config = GetConfig();
+        string configFile = "config.json";
+        if (args.Length >= 1 && !string.IsNullOrEmpty(args[0]))
+        {
+            configFile = args[0];
+        }
+        Config config = GetConfig(configFile);
         int lastId = 0;
         while (true)
         {
