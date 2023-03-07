@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using System.Net.Sockets;
 using System.Diagnostics;
 using System.Text.Json;
@@ -30,6 +31,12 @@ class Program
             {
                 lastId = gameChat.Id;
 
+                if (config.IgnoreEnemy && gameChat.Enemy == true
+                || config.IgnoreSenders.Contains(gameChat.Sender))
+                {
+                    continue;
+                }
+
                 string chatText = gameChat.Msg;
                 CleanText(ref chatText);
                 Console.Write(chatText);
@@ -48,8 +55,6 @@ class Program
 
                 string textToPass = isTranslated ? translatedText : chatText;
                 ReplaceText(ref textToPass, config.ReplaceList);
-                Debug.WriteLine(config.ReadPath);
-                Debug.WriteLine(config.ReadArg.Replace("%Text", textToPass));
                 Process.Start(config.ReadPath, config.ReadArg.Replace("%Text", textToPass));
             }
             Thread.Sleep(config.Interval);
