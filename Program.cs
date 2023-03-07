@@ -42,25 +42,40 @@ class Program
                     continue;
                 }
 
-                string chatText = gameChat.Msg;
-                CleanText(ref chatText);
-                Console.Write(chatText);
+                string originalText = gameChat.Msg;
+                CleanText(ref originalText);
 
-                (string translatedText, bool isTranslated) = Translate(chatText, config.TargetLang);
+                bool isTranslated = false;
+                string translatedText = ""; // 外に書かないと怒られる
+                if (config.TranslateEnable)
+                {
+                    (translatedText, isTranslated) = Translate(originalText, config.TargetLang);
+                }
+
                 if (isTranslated)
                 {
-                    Console.Write(" ("); // たぶん文字列処理しないほうが速い
-                    Console.Write(translatedText);
-                    Console.Write(")\n");
+                    Console.WriteLine($"{originalText} ({translatedText})");
                 }
                 else
                 {
-                    Console.Write("\n");
+                    Console.WriteLine(originalText);
                 }
 
-                string textToPass = isTranslated ? translatedText : chatText;
-                ReplaceText(ref textToPass, config.ReplaceList);
-                Process.Start(config.ReadPath, config.ReadArg.Replace("%Text", textToPass));
+                if (config.PassEnable)
+                {
+                    string textToPass = isTranslated ? translatedText : originalText;
+                    ReplaceText(ref textToPass, config.ReplaceList);
+                    try
+                    {
+                        Process.Start(config.PassFileName, config.PassArguments.Replace("%Text", textToPass));
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine($"Exception: {exception.Message}");
+                        Console.WriteLine("Passing is disabled.");
+                        config.PassEnable = false;
+                    }
+                }
             }
             Thread.Sleep(config.Interval);
         }
@@ -113,11 +128,11 @@ class Program
         public int Interval { get; set; } = 500;
         public bool IgnoreEnemy { get; set; } = false;
         public string[] IgnoreSenders { get; set; } = new string[0];
-        public bool TrnsEnable { get; set; } = false;
+        public bool TranslateEnable { get; set; } = false;
         public string TargetLang { get; set; } = "";
-        public bool ReadEnable { get; set; } = false;
-        public string ReadPath { get; set; } = "";
-        public string ReadArg { get; set; } = "";
+        public bool PassEnable { get; set; } = false;
+        public string PassFileName { get; set; } = "";
+        public string PassArguments { get; set; } = "";
         public ReplacePair[] ReplaceList { get; set; } = new ReplacePair[0];
     }
     public class ReplacePair
@@ -127,7 +142,15 @@ class Program
     }
     static Config GetConfig(string fileName = "config.json")
     {
-        return JsonSerializer.Deserialize<Config>(File.ReadAllText(fileName)) ?? new Config();
+        try
+        {
+            return JsonSerializer.Deserialize<Config>(File.ReadAllText(fileName)) ?? new Config();
+        }
+        catch (FileNotFoundException)
+        {
+            Console.WriteLine($"{fileName} does not exist. Using default config.");
+            return new Config();
+        }
     }
     static void ReplaceText(ref string text, ReplacePair[] pairs)
     {
