@@ -32,7 +32,7 @@ class Program
                 string chatText = gameChat.Msg;
                 Console.Write(chatText);
 
-                (string translatedText, bool isTranslated) = Translate(text: chatText, targetLang: config.TargetLang);
+                (string translatedText, bool isTranslated) = Translate(chatText, config.TargetLang);
                 if (isTranslated)
                 {
                     Console.Write(" ("); // たぶん文字列処理しないほうが速い
@@ -44,6 +44,7 @@ class Program
                     Console.Write("\n");
                 }
                 string textToPass = isTranslated ? translatedText : chatText;
+                ReplaceText(ref textToPass, config.ReplaceList);
                 Debug.WriteLine($"Text to pass: {textToPass}");
             }
             Thread.Sleep(config.Interval);
