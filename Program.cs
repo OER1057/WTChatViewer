@@ -7,7 +7,7 @@ namespace WTChatViewer;
 class Program
 {
     static readonly HttpClient httpClient = new HttpClient();
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         Console.WriteLine("WTChatViewer");
         Config config = GetConfig();
@@ -24,7 +24,7 @@ class Program
                 Console.WriteLine("War Thunder detected.");
                 lastId = 0;
             }
-            GameChat[] newGameChats = GetGameChat(lastId);
+            GameChat[] newGameChats = await GetGameChatsAsync(lastId);
             foreach (GameChat gameChat in newGameChats)
             {
                 lastId = gameChat.Id;
@@ -51,36 +51,34 @@ class Program
     }
     static bool IsWarThunderRunning()
     {
-        if (Process.GetProcessesByName("aces").Length == 0)
+        if (Process.GetProcessesByName("aces").Length == 0) { return false; }
+        using (var tcpClient = new TcpClient())
         {
-            return false;
+            try
+            {
+                string apiEndpoint = "127.0.0.1"; // localhostだとなぜか遅い
+                tcpClient.Connect(apiEndpoint, 8111);
+            }
+            catch (SocketException)
+            {
+                return false;
+            }
         }
-        // try
-        // {
-        //     _ = httpClient.GetAsync("http://localhost:8111").Result;
-        // }
-        // catch (AggregateException)
-        // {
-        //     Debug.WriteLine("接続失敗");
-        //     return false;
-        // }
         return true;
     }
-    static GameChat[] GetGameChat(int lastId)
+    static async Task<GameChat[]> GetGameChatsAsync(int lastId)
     {
-        string apiEndpoint = $"http://localhost:8111/gamechat?lastId={lastId}";
+        string apiEndpoint = $"http://127.0.0.1:8111/gamechat?lastId={lastId}"; // localhostだとなぜか遅い
         string responseString;
         try
         {
-            Debug.WriteLine("http開始");
-            responseString = httpClient.GetAsync(apiEndpoint).Result.Content.ReadAsStringAsync().Result;
-            Debug.WriteLine("http終了");
+            var response = await httpClient.GetAsync(apiEndpoint);
+            responseString = await response.Content.ReadAsStringAsync();
         }
-        catch (AggregateException)
+        catch (HttpRequestException)
         {
             responseString = "[]";
         }
-        // var responseString = File.ReadAllText("D:\\Downloads\\gamechat.json");
         return JsonSerializer.Deserialize<GameChat[]>(responseString) ?? new GameChat[0];
     }
     static (string, bool) Translate(string text, string targetLang)
