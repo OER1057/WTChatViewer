@@ -105,7 +105,7 @@ class Program
         try
         {
             Config config = JsonSerializer.Deserialize<Config>(File.ReadAllText(fileName)) ?? new Config();
-            Console.WriteLine($"{fileName} loaded.");
+            Console.WriteLine($"{Path.GetFullPath(fileName)} loaded.");
             return config;
         }
         catch (FileNotFoundException exception)
