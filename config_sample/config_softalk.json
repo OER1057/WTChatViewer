@@ -1,0 +1,35 @@
+{
+    "Interval": 500,
+    "IgnoreEnemy": false,
+    "IgnoreSenders": [
+        "user1",
+        "user2"
+    ],
+    "TranslateEnable": true,
+    "TargetLang": "ja",
+    "PassEnable": true,
+    "PassFileName": "D:\\Program Files\\softalk\\SofTalk.exe",
+    "PassArguments": "/W:%Text",
+    "ReplaceList": [
+        {
+            "From": "ゾーン A ",
+            "To": "A点"
+        },
+        {
+            "From": "ゾーン B ",
+            "To": "B点"
+        },
+        {
+            "From": "ゾーン C ",
+            "To": "C点"
+        },
+        {
+            "From": "ゾーン D ",
+            "To": "D点"
+        },
+        {
+            "From": " ！",
+            "To": "！"
+        }
+    ]
+}

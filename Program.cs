@@ -104,11 +104,14 @@ class Program
     {
         try
         {
-            return JsonSerializer.Deserialize<Config>(File.ReadAllText(fileName)) ?? new Config();
+            Config config = JsonSerializer.Deserialize<Config>(File.ReadAllText(fileName)) ?? new Config();
+            Console.WriteLine($"{fileName} loaded.");
+            return config;
         }
-        catch (FileNotFoundException)
+        catch (FileNotFoundException exception)
         {
-            Console.WriteLine($"{fileName} does not exist. Using default config.");
+            Console.WriteLine($"Exception: {exception.Message}");
+            Console.WriteLine("Using default config.");
             return new Config();
         }
     }

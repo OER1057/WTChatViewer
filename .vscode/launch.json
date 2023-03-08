@@ -12,7 +12,7 @@
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/bin/Debug/net7.0/WTChatViewer.dll",
             "args": [
-                "D:\\ProgramDev\\WTChatViewer\\config.json"
+                "${workspaceFolder}/config.json"
             ],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
