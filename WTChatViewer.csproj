@@ -5,6 +5,20 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <Version>0.0.0</Version>
+    <Platforms>x64</Platforms>
+    <PublishRelease>true</PublishRelease>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="config_sample/*" CopyToOutputDirectory="Always" />
+    <Content Include="LICENSE" CopyToOutputDirectory="Always" />
+    <Content Include="README.md" CopyToOutputDirectory="Always" />
+    <Content Include="WTChatViewer_minimum.bat" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 </Project>

@@ -10,6 +10,7 @@ class Program
     static readonly HttpClient httpClient = new HttpClient();
     static async Task Main(string[] args)
     {
+        Console.Title = "WTChatViewer";
         Console.WriteLine("WTChatViewer by OER1057");
 
         string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
@@ -104,11 +105,14 @@ class Program
     {
         try
         {
-            return JsonSerializer.Deserialize<Config>(File.ReadAllText(fileName)) ?? new Config();
+            Config config = JsonSerializer.Deserialize<Config>(File.ReadAllText(fileName)) ?? new Config();
+            Console.WriteLine($"{Path.GetFullPath(fileName)} loaded.");
+            return config;
         }
-        catch (FileNotFoundException)
+        catch (FileNotFoundException exception)
         {
-            Console.WriteLine($"{fileName} does not exist. Using default config.");
+            Console.WriteLine($"Exception: {exception.Message}");
+            Console.WriteLine("Using default config.");
             return new Config();
         }
     }

@@ -1,0 +1,11 @@
+{
+    "Interval": 500,
+    "IgnoreEnemy": false,
+    "IgnoreSenders": [],
+    "TranslateEnable": false,
+    "TargetLang": "",
+    "PassEnable": false,
+    "PassFileName": "",
+    "PassArguments": "",
+    "ReplaceList": []
+}
