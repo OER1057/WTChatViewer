@@ -10,6 +10,7 @@ class Program
     static readonly HttpClient httpClient = new HttpClient();
     static async Task Main(string[] args)
     {
+        Console.Title = "WTChatViewer";
         Console.WriteLine("WTChatViewer by OER1057");
 
         string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
