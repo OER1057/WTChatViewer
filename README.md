@@ -37,6 +37,14 @@
 
 翻訳が有効の場合は翻訳結果を渡します。AssistantSeikaとSofTalkの設定例を用意しているのでそちらも参考にしてください。
 
+## ランタイムのインストール
+
+[Microsoft .NET Runtime 7.0](https://dotnet.microsoft.com/ja-jp/download/dotnet/7.0)がインストールされていない場合はインストールしてください。
+
+`winget list --id Microsoft.DotNet`を実行し、`Microsoft.DotNet.Runtime.7`や`Microsoft.DotNet.DesktopRuntime.7`があればインストール済みです。
+
+`winget install Microsoft.DotNet.Runtime.7`でインストールできます。
+
 ## 実行
 
 設定ファイルを`WTChatViewer.exe`にドラッグアンドドロップするか、`WTChatViewer.exe 設定ファイル名`コマンドを実行してください。
