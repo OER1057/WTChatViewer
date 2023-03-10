@@ -21,6 +21,41 @@ class Program
         }
         Config config = GetConfig(configFile);
 
+        if (args.Length >= 2)
+        {
+            if (new[] { "-t", "--test" }.Contains(args[1]))
+            {
+                if (config.PassEnable)
+                {
+
+                    if (args.Length >= 3 && !string.IsNullOrEmpty(args[2]))
+                    {
+                        string testText = args[2];
+                        Console.WriteLine(testText);
+                        try
+                        {
+                            Process.Start(config.PassFileName, config.PassArguments.Replace("%Text", testText));
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine($"Exception: {exception.Message}");
+                            Console.WriteLine("Test failed.");
+                            Environment.Exit(1);
+                        }
+                    }
+                    else
+                    {
+                        Console.Error.WriteLine("usage: WTChatViewer configfile [-t | --test testtext]");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Passing is not enabled.");
+                }
+                Environment.Exit(0);
+            }
+        }
+
         int lastId = 0;
         while (true)
         {
@@ -75,8 +110,8 @@ class Program
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine($"Exception: {exception.Message}");
-                        Console.WriteLine("Passing is disabled.");
+                        Console.Error.WriteLine($"Exception: {exception.Message}");
+                        Console.Error.WriteLine("Passing is disabled.");
                         config.PassEnable = false;
                     }
                 }
