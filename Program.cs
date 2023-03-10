@@ -15,45 +15,54 @@ class Program
 
         string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
         string configFile = Path.Combine(exeDirectory, "config.json");
-        if (args.Length >= 1 && !string.IsNullOrEmpty(args[0]))
-        {
-            configFile = args[0];
-        }
-        Config config = GetConfig(configFile);
+        bool testMode = false;
+        string testText = "";
 
-        if (args.Length >= 2)
+        for (int i = 0; i < args.Length; i++)
         {
-            if (new[] { "-t", "--test" }.Contains(args[1]))
+            if (new[] { "-t", "--test" }.Contains(args[i]))
             {
-                if (config.PassEnable)
+                testMode = true;
+                if ((i + 1) < args.Length && !args[i + 1].StartsWith('-'))
                 {
-
-                    if (args.Length >= 3 && !string.IsNullOrEmpty(args[2]))
-                    {
-                        string testText = args[2];
-                        Console.WriteLine(testText);
-                        try
-                        {
-                            Process.Start(config.PassFileName, config.PassArguments.Replace("%Text", testText));
-                        }
-                        catch (Exception exception)
-                        {
-                            Console.WriteLine($"Exception: {exception.Message}");
-                            Console.WriteLine("Test failed.");
-                            Environment.Exit(1);
-                        }
-                    }
-                    else
-                    {
-                        Console.Error.WriteLine("usage: WTChatViewer configfile [-t | --test testtext]");
-                    }
+                    i++;
+                    testText = args[i];
                 }
                 else
                 {
-                    Console.WriteLine("Passing is not enabled.");
+                    Console.Error.WriteLine("usage: WTChatViewer configfile [-t | --test testtext]");
+                    Environment.Exit(1);
                 }
-                Environment.Exit(0);
             }
+            else if (!string.IsNullOrEmpty(args[i]))
+            {
+                configFile = args[i];
+            }
+        }
+
+        Config config = GetConfig(configFile);
+
+        if (testMode)
+        {
+            if (config.PassEnable)
+            {
+                Console.WriteLine(testText);
+                try
+                {
+                    Process.Start(config.PassFileName, config.PassArguments.Replace("%Text", testText));
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"Exception: {exception.Message}");
+                    Console.WriteLine("Test failed.");
+                    Environment.Exit(1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Passing is not enabled.");
+            }
+            Environment.Exit(0);
         }
 
         int lastId = 0;
@@ -146,8 +155,8 @@ class Program
         }
         catch (FileNotFoundException exception)
         {
-            Console.WriteLine($"Exception: {exception.Message}");
-            Console.WriteLine("Using default config.");
+            Console.Error.WriteLine($"Exception: {exception.Message}");
+            Console.Error.WriteLine("Using default config.");
             return new Config();
         }
     }
