@@ -8,8 +8,9 @@ namespace WTChatViewer;
 class Program
 {
     static readonly HttpClient httpClient = new HttpClient();
-    static async Task PressKeyToExit(ConsoleKey exitKey)
+    static void PressKeyToExit(ConsoleKey exitKey)
     {
+        Console.WriteLine($"Press {exitKey.ToString()} to exit.");
         while (true)
         {
             if (Console.ReadKey(true).Key == ConsoleKey.Q)
@@ -22,7 +23,6 @@ class Program
     {
         Console.Title = "WTChatViewer";
         Console.WriteLine("WTChatViewer by OER1057");
-        Console.WriteLine("Press 'q' to quit.");
         _ = Task.Run(() => PressKeyToExit(ConsoleKey.Q)); // 受け取らなくてもいいけど警告が出る
 
         string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
