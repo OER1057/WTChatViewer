@@ -37,6 +37,8 @@
 
 翻訳が有効の場合は翻訳結果を渡します。AssistantSeikaとSofTalkの設定例を用意しているのでそちらも参考にしてください。
 
+`WTChatViewer.exe --config 設定ファイル --test 適当な文字列`で、設定に従い「適当な文字列」を適用してコマンドを実行します。正しく設定できたかどうかの確認にご利用ください。
+
 ## ランタイムのインストール
 
 [Microsoft .NET Runtime 7.0](https://dotnet.microsoft.com/ja-jp/download/dotnet/7.0)がインストールされていない場合はインストールしてください。
@@ -47,9 +49,9 @@
 
 ## 実行
 
-設定ファイルを`WTChatViewer.exe`にドラッグアンドドロップするか、`WTChatViewer.exe -c 設定ファイル名`コマンドを実行してください。
+設定ファイルを`WTChatViewer.exe`にドラッグアンドドロップするか、`WTChatViewer.exe --config 設定ファイル名`コマンドを実行してください。
 
-ファイル名を指定せず実行した場合は、`WTChatViewer.exe`と同じディレクトリにある`config.json`の読み込みを試み、存在しなかった場合は既定の設定で動作します。
+`--config`を指定せず実行した場合は、`WTChatViewer.exe`と同じディレクトリにある`config.json`の読み込みを試み、存在しなかった場合は既定の設定で動作します。
 
 バッチファイルを用意すると毎回ファイル名を指定せずに済みます。
 
