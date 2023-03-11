@@ -80,14 +80,14 @@ class Program
             }
 
             GameChat[] newGameChats = await GetGameChatsAsync(lastId);
-            foreach (GameChat gameChat in newGameChats)
+            Parallel.ForEach(newGameChats, gameChat =>
             {
-                lastId = gameChat.Id;
+                lastId = Math.Max(gameChat.Id, lastId);
 
                 if (config.IgnoreEnemy && gameChat.Enemy == true
                 || config.IgnoreSenders.Contains(gameChat.Sender))
                 {
-                    continue;
+                    return;
                 }
 
                 string originalText = gameChat.Msg;
@@ -124,7 +124,7 @@ class Program
                         config.PassEnable = false;
                     }
                 }
-            }
+            });
             Thread.Sleep(config.Interval);
         }
     }
