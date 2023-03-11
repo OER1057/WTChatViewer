@@ -21,4 +21,8 @@
     <Content Include="README.md" CopyToOutputDirectory="Always" />
     <Content Include="WTChatViewer_minimum.bat" CopyToOutputDirectory="Always" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
+  </ItemGroup>
 </Project>

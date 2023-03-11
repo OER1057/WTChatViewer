@@ -3,10 +3,22 @@ using System.Net.Sockets;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using McMaster.Extensions.CommandLineUtils;
 
 namespace WTChatViewer;
 class Program
 {
+    static Program()
+    {
+        string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
+        ConfigFileOption = Path.Combine(exeDirectory, "config.json");
+    }
+    [Argument(0, "CONFIG", "Configuration file path.")]
+    static string? ConfigFileArgument { get; set; }
+    [Option("-c|--config", Description = "Configuration file path.")]
+    static string ConfigFileOption { get; set; }
+    [Option("-t|--test", Description = "Test text")]
+    static string? TestText { get; set; }
     static readonly HttpClient httpClient = new HttpClient();
     static void PressKeyToExit(ConsoleKey exitKey)
     {
@@ -19,49 +31,26 @@ class Program
             }
         }
     }
-    static async Task Main(string[] args)
+    static void Main(string[] args)
+    {
+        CommandLineApplication.Execute<Program>(args);
+    }
+    private async Task OnExecute()
     {
         Console.Title = "WTChatViewer";
         Console.WriteLine("WTChatViewer by OER1057");
         _ = Task.Run(() => PressKeyToExit(ConsoleKey.Q)); // 受け取らなくてもいいけど警告が出る
 
-        string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
-        string configFile = Path.Combine(exeDirectory, "config.json");
-        bool testMode = false;
-        string testText = "";
+        Config config = GetConfig(ConfigFileArgument ?? ConfigFileOption);
 
-        for (int i = 0; i < args.Length; i++)
-        {
-            if (new[] { "-t", "--test" }.Contains(args[i]))
-            {
-                testMode = true;
-                if ((i + 1) < args.Length && !args[i + 1].StartsWith('-'))
-                {
-                    i++;
-                    testText = args[i];
-                }
-                else
-                {
-                    Console.Error.WriteLine("usage: WTChatViewer configfile [-t | --test testtext]");
-                    Environment.Exit(1);
-                }
-            }
-            else if (!string.IsNullOrEmpty(args[i]))
-            {
-                configFile = args[i];
-            }
-        }
-
-        Config config = GetConfig(configFile);
-
-        if (testMode)
+        if (TestText != null)
         {
             if (config.PassEnable)
             {
-                Console.WriteLine(testText);
+                Console.WriteLine(TestText);
                 try
                 {
-                    Process.Start(config.PassFileName, config.PassArguments.Replace("%Text", testText));
+                    Process.Start(config.PassFileName, config.PassArguments.Replace("%Text", TestText));
                 }
                 catch (Exception exception)
                 {
