@@ -3,23 +3,68 @@ using System.Net.Sockets;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using McMaster.Extensions.CommandLineUtils;
 
 namespace WTChatViewer;
 class Program
 {
+    static Program()
+    {
+        string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
+        ConfigFileOption = Path.Combine(exeDirectory, "config.json");
+    }
+    [Argument(0, ShowInHelpText = false)]
+    static string? ConfigFileArgument { get; set; }
+    [Option("-c|--config", Description = "Specify configuration file path.")]
+    static string ConfigFileOption { get; set; }
+    [Option("-t|--test", Description = "Test passing configuration. Specify text to pass.")]
+    static string? TestText { get; set; }
     static readonly HttpClient httpClient = new HttpClient();
-    static async Task Main(string[] args)
+    static void PressKeyToExit(ConsoleKey exitKey)
+    {
+        Console.WriteLine($"Press {exitKey.ToString()} to exit.");
+        while (true)
+        {
+            if (Console.ReadKey(true).Key == ConsoleKey.Q)
+            {
+                Environment.Exit(0);
+            }
+        }
+    }
+    static void Main(string[] args)
+    {
+        CommandLineApplication.Execute<Program>(args);
+    }
+    private async Task OnExecute()
     {
         Console.Title = "WTChatViewer";
         Console.WriteLine("WTChatViewer by OER1057");
+        _ = Task.Run(() => PressKeyToExit(ConsoleKey.Q)); // 受け取らなくてもいいけど警告が出る
 
-        string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
-        string configFile = Path.Combine(exeDirectory, "config.json");
-        if (args.Length >= 1 && !string.IsNullOrEmpty(args[0]))
+        Config config = GetConfig(ConfigFileArgument ?? ConfigFileOption);
+
+        if (TestText != null)
         {
-            configFile = args[0];
+            if (config.PassEnable)
+            {
+                Console.WriteLine(TestText);
+                try
+                {
+                    Process.Start(config.PassFileName, config.PassArguments.Replace("%Text", TestText));
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"Exception: {exception.Message}");
+                    Console.WriteLine("Test failed.");
+                    Environment.Exit(1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Passing is not enabled.");
+            }
+            Environment.Exit(0);
         }
-        Config config = GetConfig(configFile);
 
         int lastId = 0;
         while (true)
@@ -36,14 +81,14 @@ class Program
             }
 
             GameChat[] newGameChats = await GetGameChatsAsync(lastId);
-            foreach (GameChat gameChat in newGameChats)
+            Parallel.ForEach(newGameChats, gameChat =>
             {
-                lastId = gameChat.Id;
+                lastId = Math.Max(gameChat.Id, lastId);
 
                 if (config.IgnoreEnemy && gameChat.Enemy == true
                 || config.IgnoreSenders.Contains(gameChat.Sender))
                 {
-                    continue;
+                    return;
                 }
 
                 string originalText = gameChat.Msg;
@@ -75,12 +120,12 @@ class Program
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine($"Exception: {exception.Message}");
-                        Console.WriteLine("Passing is disabled.");
+                        Console.Error.WriteLine($"Exception: {exception.Message}");
+                        Console.Error.WriteLine("Passing is disabled.");
                         config.PassEnable = false;
                     }
                 }
-            }
+            });
             Thread.Sleep(config.Interval);
         }
     }
@@ -111,8 +156,8 @@ class Program
         }
         catch (FileNotFoundException exception)
         {
-            Console.WriteLine($"Exception: {exception.Message}");
-            Console.WriteLine("Using default config.");
+            Console.Error.WriteLine($"Exception: {exception.Message}");
+            Console.Error.WriteLine("Using default config.");
             return new Config();
         }
     }
