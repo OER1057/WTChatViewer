@@ -47,7 +47,7 @@
 
 ## 実行
 
-設定ファイルを`WTChatViewer.exe`にドラッグアンドドロップするか、`WTChatViewer.exe 設定ファイル名`コマンドを実行してください。
+設定ファイルを`WTChatViewer.exe`にドラッグアンドドロップするか、`WTChatViewer.exe -c 設定ファイル名`コマンドを実行してください。
 
 ファイル名を指定せず実行した場合は、`WTChatViewer.exe`と同じディレクトリにある`config.json`の読み込みを試み、存在しなかった場合は既定の設定で動作します。
 

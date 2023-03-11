@@ -13,11 +13,11 @@ class Program
         string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "";
         ConfigFileOption = Path.Combine(exeDirectory, "config.json");
     }
-    [Argument(0, "CONFIG", "Configuration file path.")]
+    [Argument(0, ShowInHelpText = false)]
     static string? ConfigFileArgument { get; set; }
-    [Option("-c|--config", Description = "Configuration file path.")]
+    [Option("-c|--config", Description = "Specify configuration file path.")]
     static string ConfigFileOption { get; set; }
-    [Option("-t|--test", Description = "Test text")]
+    [Option("-t|--test", Description = "Test passing configuration. Specify text to pass.")]
     static string? TestText { get; set; }
     static readonly HttpClient httpClient = new HttpClient();
     static void PressKeyToExit(ConsoleKey exitKey)
