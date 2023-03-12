@@ -18,6 +18,7 @@
   <ItemGroup>
     <Content Include="config_sample/*" CopyToOutputDirectory="Always" />
     <Content Include="LICENSE" CopyToOutputDirectory="Always" />
+    <Content Include="NOTICE.md" CopyToOutputDirectory="Always" />
     <Content Include="README.md" CopyToOutputDirectory="Always" />
     <Content Include="WTChatViewer_minimum.bat" CopyToOutputDirectory="Always" />
   </ItemGroup>

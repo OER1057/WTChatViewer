@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace WTChatViewer;
+
 class Program
 {
     static Program()
