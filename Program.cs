@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace WTChatViewer;
+
 class Program
 {
     static Program()
@@ -81,7 +82,7 @@ class Program
             }
 
             GameChat[] newGameChats = await GetGameChatsAsync(lastId);
-            Parallel.ForEach(newGameChats, gameChat =>
+            Parallel.ForEach(newGameChats, async gameChat =>
             {
                 lastId = Math.Max(gameChat.Id, lastId);
 
@@ -98,7 +99,7 @@ class Program
                 string translatedText = ""; // 外に書かないと怒られる
                 if (config.TranslateEnable)
                 {
-                    (translatedText, isTranslated) = TranslateText(originalText, config.TargetLang);
+                    (translatedText, isTranslated) = await TranslateText(originalText, config.TargetLang);
                 }
 
                 if (isTranslated)
@@ -204,8 +205,7 @@ class Program
         string responseString;
         try
         {
-            var response = await httpClient.GetAsync(apiEndpoint);
-            responseString = await response.Content.ReadAsStringAsync();
+            responseString = await httpClient.GetStringAsync(apiEndpoint);
         }
         catch (HttpRequestException)
         {
@@ -218,11 +218,11 @@ class Program
         text = Regex.Replace(text, "<.*?>", "");
         text = text.Replace("\t", "");
     }
-    static (string, bool) TranslateText(string text, string targetLang)
+    static async Task<(string, bool)> TranslateText(string text, string targetLang)
     {
         string escapedText = Uri.EscapeDataString(text);
         string apiEndpoint = $"https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=auto&tl={targetLang}&q={escapedText}";
-        string responseString = httpClient.GetAsync(apiEndpoint).Result.Content.ReadAsStringAsync().Result;
+        string responseString = await httpClient.GetStringAsync(apiEndpoint);
         var responseJson = JsonDocument.Parse(responseString).RootElement;
         string translatedText = responseJson[0][0][0].GetString() ?? "";
         string detectedLang = responseJson[2].GetString() ?? "";
